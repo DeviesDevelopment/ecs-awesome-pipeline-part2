@@ -27,3 +27,21 @@ This is needed in order to use the Devies AWS account.
  * `cdk deploy`      deploy this stack to your default AWS account/region
  * `cdk diff`        compare deployed stack with current state
  * `cdk synth`       emits the synthesized CloudFormation template
+
+## Publish Docker image
+
+    docker build -t hello-world .
+
+    aws ecr describe-repositories
+
+    aws ecr get-login-password | docker login --username AWS --password-stdin   856309271307.dkr.ecr.eu-west-1.amazonaws.com/hello-world-app
+
+    docker tag hello-world 856309271307.dkr.ecr.eu-west-1.amazonaws.com/hello-world-app
+
+    docker push 856309271307.dkr.ecr.eu-west-1.amazonaws.com/hello-world-app
+
+## Run image locally 
+
+    docker build -t hello-world .
+
+    docker run -t -i -p 80:80 hello-world

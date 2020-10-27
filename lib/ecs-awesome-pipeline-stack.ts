@@ -2,10 +2,15 @@ import * as cdk from '@aws-cdk/core';
 import * as ec2 from "@aws-cdk/aws-ec2";
 import * as ecs from "@aws-cdk/aws-ecs";
 import * as ecs_patterns from "@aws-cdk/aws-ecs-patterns";
+import ecr = require("@aws-cdk/aws-ecr");
 
 export class EcsAwesomePipelineStack extends cdk.Stack {
   constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
+
+    const repository = new ecr.Repository(this, "hello-world-app", {
+      repositoryName: "hello-world-app"
+    });
 
     const vpc = new ec2.Vpc(this, "MyVpc", {
       maxAzs: 3 // Default is all AZs in region
@@ -20,7 +25,7 @@ export class EcsAwesomePipelineStack extends cdk.Stack {
       cluster: cluster, // Required
       cpu: 512, // Default is 256
       desiredCount: 6, // Default is 1
-      taskImageOptions: { image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample") },
+      taskImageOptions: { image: ecs.ContainerImage.fromEcrRepository(repository) },
       memoryLimitMiB: 2048, // Default is 512
       publicLoadBalancer: true // Default is false
     });
