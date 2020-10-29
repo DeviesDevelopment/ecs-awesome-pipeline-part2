@@ -23,7 +23,7 @@
 #    See the documentation for each action used below for the recommended IAM policies for this IAM user,
 #    and best practices on handling the access key credentials.
 
-on: [push]
+on: [pull_request]
   
 name: Deploy to Amazon ECS
 
@@ -76,3 +76,19 @@ jobs:
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         AWS_DEFAULT_REGION: 'eu-west-1'
         BRANCH_SUFFIX: ${{ steps.extract_branch.outputs.branch }}
+
+    - name: Extract service link
+      shell: bash
+      run: echo "##[set-output name=link;]$(echo $(aws cloudformation describe-stacks --stack-name HisingenHackathonServiceStack --query 'Stacks[0].Outputs[0].OutputValue'))"
+      env:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: eu-west-1
+      id: service_url
+
+    - name: Comment a pull_request
+      uses: mb2dev/github-action-comment-pull-request@1.0.0
+      with:
+        message: ${{ steps.service_url.outputs.link }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        reactions: "+1 | -1 | laugh | hooray | confused | heart | rocket | eyes"
