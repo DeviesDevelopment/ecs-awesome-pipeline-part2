@@ -3,10 +3,8 @@ FROM ubuntu:18.04
 RUN apt-get update && \
     apt-get -y install apache2
 
-ENV COLOR=blue
-
 COPY index.html /var/www/html/index.html
-RUN sed -i "s/green/${COLOR}/g" /var/www/html/index.html
+COPY run.sh /run.sh
 
 # Configure apache
 RUN echo '. /etc/apache2/envvars' > /root/run_apache.sh && \
@@ -17,4 +15,4 @@ RUN echo '. /etc/apache2/envvars' > /root/run_apache.sh && \
 
 EXPOSE 80
 
-CMD /root/run_apache.sh
+CMD /run.sh

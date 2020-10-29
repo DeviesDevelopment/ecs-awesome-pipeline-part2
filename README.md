@@ -34,7 +34,7 @@ This is needed in order to use the Devies AWS account.
 
     aws ecr describe-repositories
 
-    aws ecr get-login-password | docker login --username AWS --password-stdin   856309271307.dkr.ecr.eu-west-1.amazonaws.com/hello-world-app
+    aws ecr get-login-password | docker login --username AWS --password-stdin 856309271307.dkr.ecr.eu-west-1.amazonaws.com/hello-world-app
 
     docker tag hello-world 856309271307.dkr.ecr.eu-west-1.amazonaws.com/hello-world-app
 
@@ -44,4 +44,4 @@ This is needed in order to use the Devies AWS account.
 
     docker build -t hello-world .
 
-    docker run -t -i -p 80:80 hello-world
+    docker run -t -i -p 80:80 -e color=GREEN hello-world

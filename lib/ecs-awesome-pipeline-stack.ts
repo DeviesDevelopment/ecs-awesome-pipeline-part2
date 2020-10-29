@@ -25,7 +25,12 @@ export class EcsAwesomePipelineStack extends cdk.Stack {
       cluster: cluster, // Required
       cpu: 512, // Default is 256
       desiredCount: 6, // Default is 1
-      taskImageOptions: { image: ecs.ContainerImage.fromEcrRepository(repository) },
+      taskImageOptions: { 
+        image: ecs.ContainerImage.fromEcrRepository(repository),
+        environment: {
+          COLOR: "red"
+        }
+      },
       memoryLimitMiB: 2048, // Default is 512
       publicLoadBalancer: true // Default is false
     });
