@@ -24,7 +24,7 @@ export class EcsAwesomePipelineStack extends cdk.Stack {
     new ecs_patterns.ApplicationLoadBalancedFargateService(this, "MyFargateService", {
       cluster: cluster, // Required
       cpu: 512, // Default is 256
-      desiredCount: 6, // Default is 1
+      desiredCount: 1, // Default is 1
       taskImageOptions: { 
         image: ecs.ContainerImage.fromEcrRepository(repository),
         environment: {
