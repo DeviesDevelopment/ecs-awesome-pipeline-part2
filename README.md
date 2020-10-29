@@ -1,6 +1,12 @@
 # Welcome to an awesome CDK TypeScript project!
 
-This is an awesome project for TypeScript development with CDK.
+The purpose of this repository is to demonstrate a pipeline (using Github Actions) which deploys a new and isolated version of a simple application for every pull request. This means that you can try out your changes, run integration tests etc before you merge your branch into master and without affecting the code running in production in any way.
+
+The file [lib/ecs-awesome-pipeline-stack.ts](lib/ecs-awesome-pipeline-stack.ts) contains a variable called `COLOR` which you can edit before you open a pull request. That way you can quickly verify that the deployed application really includes the changes you made.
+
+Feel free to fork this repo if you want to play around with it.
+
+## Overview
 
 The `cdk.json` file tells the CDK Toolkit how to execute your app.
 
@@ -85,3 +91,8 @@ The pipeline, which is specified in [aws.yml](.github/workflows/aws.yml), will b
     docker run -t -i -p 80:80 -e color=GREEN hello-world
 
 Visit http://localhost:80 in your browser.
+
+## Destroy resouces
+
+* Destroy all the deployed CloudFormation stacks.
+* The ECR registry has a DeletionPolicy set, and therefore needs to be deleted manually.

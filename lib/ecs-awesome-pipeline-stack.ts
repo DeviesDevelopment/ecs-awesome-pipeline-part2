@@ -1,8 +1,9 @@
 import * as cdk from '@aws-cdk/core';
-import * as ec2 from "@aws-cdk/aws-ec2";
 import * as ecs from "@aws-cdk/aws-ecs";
 import * as ecs_patterns from "@aws-cdk/aws-ecs-patterns";
 import ecr = require("@aws-cdk/aws-ecr");
+
+const COLOR = "red";
 
 interface EcsAwesomePipelineStackProps extends cdk.StackProps {
   ecsCluster: ecs.Cluster,
@@ -21,7 +22,7 @@ export class EcsAwesomePipelineStack extends cdk.Stack {
       taskImageOptions: {
         image: ecs.ContainerImage.fromEcrRepository(props.ecrRepository, "latest"),
         environment: {
-          COLOR: "purple"
+          COLOR
         }
       },
       memoryLimitMiB: 512, // Default is 512
