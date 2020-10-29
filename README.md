@@ -10,6 +10,8 @@ The `cdk.json` file tells the CDK Toolkit how to execute your app.
 
 * Install CDK: `npm install -g aws-cdk`
 
+* Install Docker if you want to run the app locally.
+
 ## Create an AWS IAM user
 
 How to generate an access key to use with the AWS CLI.
@@ -47,3 +49,5 @@ This is needed in order to use the Devies AWS account.
     docker build -t hello-world .
 
     docker run -t -i -p 80:80 -e color=GREEN hello-world
+
+Vist http://localhost:80 in your browser.
