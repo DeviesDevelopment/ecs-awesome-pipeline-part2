@@ -6,6 +6,8 @@ The `cdk.json` file tells the CDK Toolkit how to execute your app.
 
 ## Setup
 
+* Install npm.
+
 * Install [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html)
 
 * Install CDK: `npm install -g aws-cdk`
@@ -14,7 +16,7 @@ The `cdk.json` file tells the CDK Toolkit how to execute your app.
 
 ### Install dependencies
 
-* npm ci
+    npm ci
 
 ### Create an AWS IAM user
 
@@ -24,15 +26,26 @@ How to generate an access key to use with the AWS CLI.
 - In the next step, add the user to the group "developer".
 - If you need to, you can then edit the groups for this permission.
 - Remember to copy the generated key id and secret access key (and password if you generated one), because you will not be able to retrieve them later.
-- Put the credentials into `~/.aws/credentials`.
+- Put the generated credentials on your local computer:
 
-You can either use the same credentials for Github Actions or generate a separate set of credentials.
+`~/.aws/credentials`:
+
+    [default]
+    aws_access_key_id=
+    aws_secret_access_key=
+
+`~/.aws/config`:
+
+    [default]
+    region=eu-west-1
+    output=json
+
 
 ## Deployment
 
 ### Publish Docker image (manually)
 
-    docker build -t hello-world .
+    docker build -t latest .
 
     aws ecr describe-repositories
 
@@ -60,7 +73,8 @@ Other useful commands:
 
 
 ### Deploy with Github Actions
-All you need to do is to add the following Github Secrets: `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY`.
+All you need to do is to add the following Github Secrets: `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY`. You can either use the same credentials as you use locally or generate a separate set of credentials.
+
 
 The pipeline, which is specified in [aws.yml](.github/workflows/aws.yml), will be run automatically on every push to master.
 
