@@ -1,31 +1,9 @@
-# This workflow will build and push a new container image to Amazon ECR,
-# and then will deploy a new task definition to Amazon ECS, when a release is created
-#
-# To use this workflow, you will need to complete the following set-up steps:
-#
-# 1. Create an ECR repository to store your images.
-#    For example: `aws ecr create-repository --repository-name my-ecr-repo --region us-east-2`.
-#    Replace the value of `ECR_REPOSITORY` in the workflow below with your repository's name.
-#    Replace the value of `aws-region` in the workflow below with your repository's region.
-#
-# 2. Create an ECS task definition, an ECS cluster, and an ECS service.
-#    For example, follow the Getting Started guide on the ECS console:
-#      https://us-east-2.console.aws.amazon.com/ecs/home?region=us-east-2#/firstRun
-#    Replace the values for `service` and `cluster` in the workflow below with your service and cluster names.
-#
-# 3. Store your ECS task definition as a JSON file in your repository.
-#    The format should follow the output of `aws ecs register-task-definition --generate-cli-skeleton`.
-#    Replace the value of `task-definition` in the workflow below with your JSON file's name.
-#    Replace the value of `container-name` in the workflow below with the name of the container
-#    in the `containerDefinitions` section of the task definition.
-#
-# 4. Store an IAM user access key in GitHub Actions secrets named `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY`.
-#    See the documentation for each action used below for the recommended IAM policies for this IAM user,
-#    and best practices on handling the access key credentials.
 
-on: [push]
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
   
-name: Deploy to Amazon ECS
+name: Deploy branch
 
 jobs:
   deploy:
@@ -43,10 +21,10 @@ jobs:
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: eu-west-1
 
-    - name: Extract branch name
+    - name: Extract pull request number
       shell: bash
-      run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
-      id: extract_branch
+      run: echo "##[set-output name=number;]$(jq --raw-output .pull_request.number $GITHUB_EVENT_PATH)"
+      id: pull_request
 
     - name: Login to Amazon ECR
       id: login-ecr
@@ -69,10 +47,26 @@ jobs:
     - name: cdk deploy
       uses: youyo/aws-cdk-github-actions@v1
       with:
-        cdk_subcommand: "deploy HisingenHackathonServiceStack-${{ steps.extract_branch.outputs.branch }} --require-approval never"
+        cdk_subcommand: "deploy HisingenHackathonServiceStack-${{ steps.pull_request.outputs.number }} --require-approval never"
         actions_comment: false
       env:
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         AWS_DEFAULT_REGION: 'eu-west-1'
-        BRANCH_SUFFIX: ${{ steps.extract_branch.outputs.branch }}
+        BRANCH_SUFFIX: ${{ steps.pull_request.outputs.number  }}
+
+    - name: Extract service link
+      shell: bash
+      run: echo "##[set-output name=link;]$(echo $(aws cloudformation describe-stacks --stack-name HisingenHackathonServiceStack-${{ steps.pull_request.outputs.number }} --query 'Stacks[0].Outputs[*].OutputValue' | grep http))"
+      env:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: eu-west-1
+      id: service_url
+
+    - name: Comment a pull_request
+      uses: mb2dev/github-action-comment-pull-request@1.0.0
+      with:
+        message: ${{ steps.service_url.outputs.link }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        reactions: "confused | rocket"
