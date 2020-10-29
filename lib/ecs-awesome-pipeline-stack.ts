@@ -4,32 +4,22 @@ import * as ecs from "@aws-cdk/aws-ecs";
 import * as ecs_patterns from "@aws-cdk/aws-ecs-patterns";
 import ecr = require("@aws-cdk/aws-ecr");
 
+interface EcsAwesomePipelineStackProps extends cdk.StackProps {
+  ecsCluster: ecs.Cluster,
+  ecrRepository: ecr.Repository,
+}
+
 export class EcsAwesomePipelineStack extends cdk.Stack {
-  constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
+  constructor(scope: cdk.Construct, id: string, props: EcsAwesomePipelineStackProps) {
     super(scope, id, props);
-
-    const repository = new ecr.Repository(this, "hello-world-app", {
-      repositoryName: "hello-world-app"
-    });
-
-    const vpc = new ec2.Vpc(this, "MyVpc", {
-      maxAzs: 3 // Default is all AZs in region
-    });
-
-    const cluster = new ecs.Cluster(this, "MyCluster", {
-      vpc: vpc
-    });
-
-    // something with URL
-    // redirect to ?
 
     // Create a load-balanced Fargate service and make it public
     new ecs_patterns.ApplicationLoadBalancedFargateService(this, "MyFargateServiceBlack", {
-      cluster: cluster, // Required
+      cluster: props.ecsCluster, // Required
       cpu: 256, // Default is 256
       desiredCount: 1, // Default is 1
       taskImageOptions: {
-        image: ecs.ContainerImage.fromEcrRepository(repository, "latest"),
+        image: ecs.ContainerImage.fromEcrRepository(props.ecrRepository, "latest"),
         environment: {
           COLOR: "black"
         }
@@ -40,11 +30,11 @@ export class EcsAwesomePipelineStack extends cdk.Stack {
 
     // Create a load-balanced Fargate service and make it public
     new ecs_patterns.ApplicationLoadBalancedFargateService(this, "MyFargateServiceRed", {
-      cluster: cluster, // Required
+      cluster: props.ecsCluster, // Required
       cpu: 256, // Default is 256
       desiredCount: 1, // Default is 1
       taskImageOptions: {
-        image: ecs.ContainerImage.fromEcrRepository(repository, "latest"),
+        image: ecs.ContainerImage.fromEcrRepository(props.ecrRepository, "latest"),
         environment: {
           COLOR: "red"
         }

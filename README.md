@@ -12,6 +12,10 @@ The `cdk.json` file tells the CDK Toolkit how to execute your app.
 
 * Install Docker if you want to run the app locally.
 
+### Install dependencies
+
+* npm ci
+
 ### Create an AWS IAM user
 
 How to generate an access key to use with the AWS CLI.
@@ -45,7 +49,7 @@ Use the URL you got as output in the following commands.
 
 Deploy this stack to your default AWS account/region:
 
-    cdk deploy --require-approval never
+    cdk deploy HisingenHackathonServiceStack --require-approval never
 
 In the output, you will see the URL to your application.
 

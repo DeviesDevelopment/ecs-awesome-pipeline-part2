@@ -64,7 +64,7 @@ jobs:
     - name: cdk deploy
       uses: youyo/aws-cdk-github-actions@v1
       with:
-        cdk_subcommand: "deploy --require-approval never"
+        cdk_subcommand: "deploy HisingenHackathonServiceStack --require-approval never"
         actions_comment: false
       env:
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
