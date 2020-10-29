@@ -43,6 +43,11 @@ jobs:
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: eu-west-1
 
+    - name: Extract branch name
+      shell: bash
+      run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+      id: extract_branch
+
     - name: Login to Amazon ECR
       id: login-ecr
       uses: aws-actions/amazon-ecr-login@v1
@@ -64,9 +69,10 @@ jobs:
     - name: cdk deploy
       uses: youyo/aws-cdk-github-actions@v1
       with:
-        cdk_subcommand: "deploy HisingenHackathonServiceStack --require-approval never"
+        cdk_subcommand: "deploy HisingenHackathonServiceStack-${{ steps.extract_branch.outputs.branch }} --require-approval never"
         actions_comment: false
       env:
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         AWS_DEFAULT_REGION: 'eu-west-1'
+        BRANCH_SUFFIX: ${{ steps.extract_branch.outputs.branch }}
