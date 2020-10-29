@@ -66,4 +66,4 @@ The pipeline, which is specified in [aws.yml](.github/workflows/aws.yml), will b
 
     docker run -t -i -p 80:80 -e color=GREEN hello-world
 
-Vist http://localhost:80 in your browser.
+Visit http://localhost:80 in your browser.
