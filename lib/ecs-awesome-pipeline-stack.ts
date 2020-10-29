@@ -20,18 +20,36 @@ export class EcsAwesomePipelineStack extends cdk.Stack {
       vpc: vpc
     });
 
+    // something with URL
+    // redirect to ?
+
     // Create a load-balanced Fargate service and make it public
-    new ecs_patterns.ApplicationLoadBalancedFargateService(this, "MyFargateService", {
+    new ecs_patterns.ApplicationLoadBalancedFargateService(this, "MyFargateServiceBlack", {
       cluster: cluster, // Required
-      cpu: 512, // Default is 256
+      cpu: 256, // Default is 256
       desiredCount: 1, // Default is 1
-      taskImageOptions: { 
+      taskImageOptions: {
         image: ecs.ContainerImage.fromEcrRepository(repository, "latest"),
         environment: {
           COLOR: "black"
         }
       },
-      memoryLimitMiB: 2048, // Default is 512
+      memoryLimitMiB: 512, // Default is 512
+      publicLoadBalancer: true // Default is false
+    });
+
+    // Create a load-balanced Fargate service and make it public
+    new ecs_patterns.ApplicationLoadBalancedFargateService(this, "MyFargateServiceRed", {
+      cluster: cluster, // Required
+      cpu: 256, // Default is 256
+      desiredCount: 1, // Default is 1
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromEcrRepository(repository, "latest"),
+        environment: {
+          COLOR: "red"
+        }
+      },
+      memoryLimitMiB: 512, // Default is 512
       publicLoadBalancer: true // Default is false
     });
   }
