@@ -15,16 +15,18 @@ The `cdk.json` file tells the CDK Toolkit how to execute your app.
 ### Create an AWS IAM user
 
 How to generate an access key to use with the AWS CLI.
-This is needed in order to use the Devies AWS account.
-- Go to AWS IAM > Users > Add user.
+- Go to AWS IAM > Users > Add user in the AWS Console.
 - Select "Programmatic access" (and "AWS Management Console access" if you want to).
 - In the next step, add the user to the group "developer".
 - If you need to, you can then edit the groups for this permission.
 - Remember to copy the generated key id and secret access key (and password if you generated one), because you will not be able to retrieve them later.
 - Put the credentials into `~/.aws/credentials`.
 
+You can either use the same credentials for Github Actions or generate a separate set of credentials.
 
-## Publish Docker image
+## Deployment
+
+### Publish Docker image (manually)
 
     docker build -t hello-world .
 
@@ -39,7 +41,7 @@ Use the URL you got as output in the following commands.
     docker push 856309271307.dkr.ecr.eu-west-1.amazonaws.com/hello-world-app
 
 
-## Deploy CloudFormation stack
+### Deploy CloudFormation stack (manually)
 
 Deploy this stack to your default AWS account/region:
 
@@ -52,6 +54,11 @@ Other useful commands:
  * `cdk diff`        compare deployed stack with current state
  * `cdk synth`       emits the synthesized CloudFormation template
 
+
+### Deploy with Github Actions
+All you need to do is to add the following Github Secrets: `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY`.
+
+The pipeline, which is specified in [aws.yml](.github/workflows/aws.yml), will be run automatically on every push to master.
 
 ## Run image locally 
 
