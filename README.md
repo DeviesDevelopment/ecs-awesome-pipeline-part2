@@ -12,7 +12,7 @@ The `cdk.json` file tells the CDK Toolkit how to execute your app.
 
 * Install Docker if you want to run the app locally.
 
-## Create an AWS IAM user
+### Create an AWS IAM user
 
 How to generate an access key to use with the AWS CLI.
 This is needed in order to use the Devies AWS account.
@@ -23,14 +23,6 @@ This is needed in order to use the Devies AWS account.
 - Remember to copy the generated key id and secret access key (and password if you generated one), because you will not be able to retrieve them later.
 - Put the credentials into `~/.aws/credentials`.
 
-## Useful commands
-
- * `npm run build`   compile typescript to js
- * `npm run watch`   watch for changes and compile
- * `npm run test`    perform the jest unit tests
- * `cdk deploy --require-approval never`      deploy this stack to your default AWS account/region
- * `cdk diff`        compare deployed stack with current state
- * `cdk synth`       emits the synthesized CloudFormation template
 
 ## Publish Docker image
 
@@ -38,11 +30,28 @@ This is needed in order to use the Devies AWS account.
 
     aws ecr describe-repositories
 
+Use the URL you got as output in the following commands.
+
     aws ecr get-login-password | docker login --username AWS --password-stdin 856309271307.dkr.ecr.eu-west-1.amazonaws.com/hello-world-app
 
     docker tag hello-world 856309271307.dkr.ecr.eu-west-1.amazonaws.com/hello-world-app
 
     docker push 856309271307.dkr.ecr.eu-west-1.amazonaws.com/hello-world-app
+
+
+## Deploy CloudFormation stack
+
+Deploy this stack to your default AWS account/region:
+
+    cdk deploy --require-approval never
+
+In the output, you will see the URL to your application.
+
+Other useful commands:
+
+ * `cdk diff`        compare deployed stack with current state
+ * `cdk synth`       emits the synthesized CloudFormation template
+
 
 ## Run image locally 
 
