@@ -3,7 +3,7 @@ on:
   pull_request:
     types: [opened, synchronize, reopened]
   
-name: Deploy to Amazon ECS
+name: Deploy branch
 
 jobs:
   deploy:
@@ -21,10 +21,10 @@ jobs:
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: eu-west-1
 
-    - name: Extract branch name
+    - name: Extract pull request number
       shell: bash
-      run: echo "##[set-output name=branch;]$(jq --raw-output .pull_request.number $GITHUB_EVENT_PATH)"
-      id: extract_branch
+      run: echo "##[set-output name=number;]$(jq --raw-output .pull_request.number $GITHUB_EVENT_PATH)"
+      id: pull_request
 
     - name: Login to Amazon ECR
       id: login-ecr
@@ -47,17 +47,17 @@ jobs:
     - name: cdk deploy
       uses: youyo/aws-cdk-github-actions@v1
       with:
-        cdk_subcommand: "deploy HisingenHackathonServiceStack-${{ steps.extract_branch.outputs.branch }} --require-approval never"
+        cdk_subcommand: "deploy HisingenHackathonServiceStack-${{ steps.pull_request.outputs.number }} --require-approval never"
         actions_comment: false
       env:
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         AWS_DEFAULT_REGION: 'eu-west-1'
-        BRANCH_SUFFIX: ${{ steps.extract_branch.outputs.branch }}
+        BRANCH_SUFFIX: ${{ steps.pull_request.outputs.number  }}
 
     - name: Extract service link
       shell: bash
-      run: echo "##[set-output name=link;]$(echo $(aws cloudformation describe-stacks --stack-name HisingenHackathonServiceStack-${{ steps.extract_branch.outputs.branch }} --query 'Stacks[0].Outputs[0].OutputValue'))"
+      run: echo "##[set-output name=link;]$(echo $(aws cloudformation describe-stacks --stack-name HisingenHackathonServiceStack-${{ steps.pull_request.outputs.number }} --query 'Stacks[0].Outputs[*].OutputValue' | grep http))"
       env:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -69,4 +69,4 @@ jobs:
       with:
         message: ${{ steps.service_url.outputs.link }}
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        reactions: "+1 | -1 | laugh | hooray | confused | heart | rocket | eyes"
+        reactions: "confused | rocket"
