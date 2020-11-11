@@ -2,6 +2,7 @@ import * as cdk from '@aws-cdk/core';
 import * as ec2 from "@aws-cdk/aws-ec2";
 import * as ecs from "@aws-cdk/aws-ecs";
 import ecr = require("@aws-cdk/aws-ecr");
+import * as route53 from '@aws-cdk/aws-route53';
 
 export class CommonInfrastructure extends cdk.Stack {
 
@@ -25,5 +26,8 @@ export class CommonInfrastructure extends cdk.Stack {
       vpc: vpc
     });
 
+    const hostedZone = new route53.HostedZone(this, 'SubDomainHostedZone', {
+      zoneName: 'hackathon.devies.se'
+    });
   }
 }
