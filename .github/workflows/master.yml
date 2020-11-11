@@ -23,9 +23,9 @@ jobs:
 
     - name: Extract pull request number
       uses: jwalton/gh-find-current-pr@v1
-        id: findPr
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+      id: findPr
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Extract load balancer DNS name
       run: |
