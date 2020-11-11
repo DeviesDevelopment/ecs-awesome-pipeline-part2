@@ -1,0 +1,53 @@
+on:
+  push:
+    branches:
+      - main
+
+name: Traffic shift
+
+jobs:
+  traffic-shift:
+    name: Traffic shift
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: eu-west-1
+
+    - name: Extract pull request number
+      run: echo "##[set-output name=number;]$(jq --raw-output .pull_request.number $GITHUB_EVENT_PATH)"
+      id: pull_request
+
+    - name: Extract load balancer DNS name
+      run: |
+        DOMAIN=$(aws cloudformation describe-stacks --stack-name HisingenHackathonServiceStack-${{ steps.pull_request.outputs.number }} --query 'Stacks[0].Outputs[?OutputKey=='LoadBalancerDNSName'].OutputValue' --output text)
+        ARN=$(aws cloudformation describe-stacks --stack-name HisingenHackathonServiceStack-${{ steps.pull_request.outputs.number }} --query 'Stacks[0].Outputs[?OutputKey=='LoadBalancerARN'].OutputValue' --output text)
+        HOSTED_ZONE=$(aws elbv2 describe-load-balancers --names $ARN --query "LoadBalancers[0].CanonicalHostedZoneId" --output text)
+        echo "##[set-output name=domain;]$DOMAIN"
+        echo "##[set-output name=hosted_zone;]$HOSTED_ZONE"
+      env:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: eu-west-1
+      id: alb
+
+    - name: Print domain and hosted zone
+      run: |
+        echo ${{ steps.alb.outputs.domain }}
+        echo ${{ steps.alb.outputs.hosted_zone }}
+
+    - name: Shift traffic
+      run: |
+        cat .github/workflows/shift-traffic.json | sed "s/###DNSNAME###/${{ steps.alb.outputs.domain }}/" | sed "s/###HOSTEDZONE###/${{ steps.alb.outputs.hosted_zone }}/" > change.json
+        aws route53 change-resource-record-sets --hosted-zone-id Z02105612MPE0GB441IHX --change-batch file://change.json
+      env:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: eu-west-1

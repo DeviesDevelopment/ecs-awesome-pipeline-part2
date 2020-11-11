@@ -4,7 +4,7 @@ import * as ecs_patterns from "@aws-cdk/aws-ecs-patterns";
 import ecr = require("@aws-cdk/aws-ecr");
 import { CfnOutput } from '@aws-cdk/core';
 
-const COLOR = "blue";
+const COLOR = "black";
 
 interface EcsAwesomePipelineStackProps extends cdk.StackProps {
   ecsCluster: ecs.Cluster,
@@ -32,6 +32,9 @@ export class EcsAwesomePipelineStack extends cdk.Stack {
 
     new CfnOutput(this, 'LoadBalancerDNSName', {
       value: service.loadBalancer.loadBalancerDnsName,
+    });
+    new CfnOutput(this, 'LoadBalancerARN', {
+      value: service.loadBalancer.loadBalancerArn,
     });
 
   }
