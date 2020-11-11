@@ -1,6 +1,7 @@
 import * as cdk from '@aws-cdk/core';
 import * as ec2 from "@aws-cdk/aws-ec2";
 import * as ecs from "@aws-cdk/aws-ecs";
+import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
 import ecr = require("@aws-cdk/aws-ecr");
 
 export class CommonInfrastructure extends cdk.Stack {
@@ -24,6 +25,14 @@ export class CommonInfrastructure extends cdk.Stack {
     this.ecsCluster = new ecs.Cluster(this, "MyCluster", {
       vpc: vpc
     });
+
+    const externalLoadBalancer = new elbv2.ApplicationLoadBalancer(this, 'ExternalLoadBalancer', {
+      vpc,
+      internetFacing: true
+    });
+    const listener = externalLoadBalancer.addListener('Listener', {
+      port: 80,
+    })
 
   }
 }
