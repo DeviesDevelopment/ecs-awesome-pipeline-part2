@@ -1,9 +1,8 @@
 import * as cdk from '@aws-cdk/core';
 import * as ec2 from "@aws-cdk/aws-ec2";
 import * as ecs from "@aws-cdk/aws-ecs";
-import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
 import ecr = require("@aws-cdk/aws-ecr");
-import { ListenerAction } from '@aws-cdk/aws-elasticloadbalancingv2';
+import * as route53 from '@aws-cdk/aws-route53';
 
 export class CommonInfrastructure extends cdk.Stack {
 
@@ -27,14 +26,8 @@ export class CommonInfrastructure extends cdk.Stack {
       vpc: vpc
     });
 
-    const externalLoadBalancer = new elbv2.ApplicationLoadBalancer(this, 'ExternalLoadBalancer', {
-      vpc,
-      internetFacing: true
+    const hostedZone = new route53.HostedZone(this, 'SubDomainHostedZone', {
+      zoneName: 'hackathon.devies.se.'
     });
-    const listener = externalLoadBalancer.addListener('Listener', {
-      port: 80,
-      defaultAction: ListenerAction.fixedResponse(404),
-    });
-
   }
 }
