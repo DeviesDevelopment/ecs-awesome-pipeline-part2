@@ -2,6 +2,7 @@ import * as cdk from '@aws-cdk/core';
 import * as ecs from "@aws-cdk/aws-ecs";
 import * as ecs_patterns from "@aws-cdk/aws-ecs-patterns";
 import ecr = require("@aws-cdk/aws-ecr");
+import { CfnOutput } from '@aws-cdk/core';
 
 const COLOR = "blue";
 
@@ -15,7 +16,7 @@ export class EcsAwesomePipelineStack extends cdk.Stack {
     super(scope, id, props);
 
     // Create a load-balanced Fargate service and make it public
-    new ecs_patterns.ApplicationLoadBalancedFargateService(this, "MyFargateService", {
+    const service = new ecs_patterns.ApplicationLoadBalancedFargateService(this, "MyFargateService", {
       cluster: props.ecsCluster, // Required
       cpu: 256, // Default is 256
       desiredCount: 1, // Default is 1
@@ -27,6 +28,10 @@ export class EcsAwesomePipelineStack extends cdk.Stack {
       },
       memoryLimitMiB: 512, // Default is 512
       publicLoadBalancer: true // Default is false
+    });
+
+    new CfnOutput(this, 'LoadBalancerDNSName', {
+      value: service.loadBalancer.loadBalancerDnsName,
     });
 
   }
