@@ -27,7 +27,7 @@ export class CommonInfrastructure extends cdk.Stack {
     });
 
     const hostedZone = new route53.HostedZone(this, 'SubDomainHostedZone', {
-      zoneName: 'hackathon.devies.se.'
+      zoneName: 'hackathon.devies.se'
     });
   }
 }
