@@ -3,7 +3,7 @@ import * as ecs from "@aws-cdk/aws-ecs";
 import * as ecs_patterns from "@aws-cdk/aws-ecs-patterns";
 import ecr = require("@aws-cdk/aws-ecr");
 
-const COLOR = "red";
+const COLOR = "blue";
 
 interface EcsAwesomePipelineStackProps extends cdk.StackProps {
   ecsCluster: ecs.Cluster,
