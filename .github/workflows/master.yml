@@ -31,7 +31,7 @@ jobs:
       run: |
         DOMAIN=$(aws cloudformation describe-stacks --stack-name HisingenHackathonServiceStack-$PR --query "Stacks[0].Outputs[?OutputKey=='LoadBalancerDNSName'].OutputValue" --output text)
         ARN=$(aws cloudformation describe-stacks --stack-name HisingenHackathonServiceStack-$PR --query "Stacks[0].Outputs[?OutputKey=='LoadBalancerARN'].OutputValue" --output text)
-        HOSTED_ZONE=$(aws elbv2 describe-load-balancers --names $ARN --query "LoadBalancers[0].CanonicalHostedZoneId" --output text)
+        HOSTED_ZONE=$(aws elbv2 describe-load-balancers --load-balancer-arns $ARN --query "LoadBalancers[0].CanonicalHostedZoneId" --output text)
         echo "##[set-output name=domain;]$DOMAIN"
         echo "##[set-output name=hosted_zone;]$HOSTED_ZONE"
       env:
