@@ -1,0 +1,16 @@
+{
+   "Changes": [
+      {
+         "Action": "UPSERT",
+         "ResourceRecordSet": {
+            "Name": "hackathon.devies.se",
+            "Type": "A",
+            "AliasTarget": {
+               "DNSName": "###DNSNAME###",
+               "HostedZoneId": "###HOSTEDZONE###",
+               "EvaluateTargetHealth": true
+            }
+         }
+      }
+   ]
+}
