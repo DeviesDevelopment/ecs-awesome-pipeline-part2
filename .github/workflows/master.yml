@@ -22,17 +22,20 @@ jobs:
         aws-region: eu-west-1
 
     - name: Extract pull request number
-      run: echo "##[set-output name=number;]$(jq --raw-output .pull_request.number $GITHUB_EVENT_PATH)"
-      id: pull_request
+      uses: jwalton/gh-find-current-pr@v1
+        id: findPr
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Extract load balancer DNS name
       run: |
-        DOMAIN=$(aws cloudformation describe-stacks --stack-name HisingenHackathonServiceStack-${{ steps.pull_request.outputs.number }} --query 'Stacks[0].Outputs[?OutputKey=='LoadBalancerDNSName'].OutputValue' --output text)
-        ARN=$(aws cloudformation describe-stacks --stack-name HisingenHackathonServiceStack-${{ steps.pull_request.outputs.number }} --query 'Stacks[0].Outputs[?OutputKey=='LoadBalancerARN'].OutputValue' --output text)
+        DOMAIN=$(aws cloudformation describe-stacks --stack-name HisingenHackathonServiceStack-$PR --query 'Stacks[0].Outputs[?OutputKey=='LoadBalancerDNSName'].OutputValue' --output text)
+        ARN=$(aws cloudformation describe-stacks --stack-name HisingenHackathonServiceStack-$PR --query 'Stacks[0].Outputs[?OutputKey=='LoadBalancerARN'].OutputValue' --output text)
         HOSTED_ZONE=$(aws elbv2 describe-load-balancers --names $ARN --query "LoadBalancers[0].CanonicalHostedZoneId" --output text)
         echo "##[set-output name=domain;]$DOMAIN"
         echo "##[set-output name=hosted_zone;]$HOSTED_ZONE"
       env:
+        PR: ${{ steps.findPr.outputs.pr }}
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: eu-west-1
