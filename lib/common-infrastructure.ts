@@ -3,6 +3,7 @@ import * as ec2 from "@aws-cdk/aws-ec2";
 import * as ecs from "@aws-cdk/aws-ecs";
 import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
 import ecr = require("@aws-cdk/aws-ecr");
+import { ListenerAction } from '@aws-cdk/aws-elasticloadbalancingv2';
 
 export class CommonInfrastructure extends cdk.Stack {
 
@@ -32,7 +33,8 @@ export class CommonInfrastructure extends cdk.Stack {
     });
     const listener = externalLoadBalancer.addListener('Listener', {
       port: 80,
-    })
+      defaultAction: ListenerAction.fixedResponse(404),
+    });
 
   }
 }
